@@ -47,3 +47,30 @@ class TestNSEMarketConfig:
     def test_from_yfinance_ticker(self):
         assert from_yfinance_ticker("SCOM.NR") == "SCOM"
         assert from_yfinance_ticker("EQTY.NR") == "EQTY"
+
+
+from tradingagents.dataflows.nse_utils import (
+    normalize_nse_ticker,
+    get_nse_instrument_context,
+)
+
+@pytest.mark.unit
+class TestNSEDataUtils:
+    def test_normalize_bare_known_symbol(self):
+        assert normalize_nse_ticker("SCOM") == "SCOM.NR"
+
+    def test_normalize_already_suffixed(self):
+        assert normalize_nse_ticker("KCB.NR") == "KCB.NR"
+
+    def test_normalize_non_nse_passthrough(self):
+        assert normalize_nse_ticker("NVDA") == "NVDA"
+
+    def test_instrument_context_contains_kes(self):
+        ctx = get_nse_instrument_context("SCOM.NR")
+        assert "KES" in ctx
+        assert "NSE" in ctx
+        assert "EAT" in ctx or "UTC+3" in ctx
+
+    def test_instrument_context_contains_bare_symbol(self):
+        ctx = get_nse_instrument_context("EQTY.NR")
+        assert "EQTY" in ctx
