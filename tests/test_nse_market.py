@@ -15,6 +15,10 @@ class TestNSEMarketConfig:
         assert cfg["settlement_days"] == 3
         assert cfg["yfinance_suffix"] == ".NR"
         assert "SCOM" in cfg["tickers"]
+        # Verify correct NSE trading hours
+        from datetime import time
+        assert cfg["trading_hours"]["open"] == time(9, 0)
+        assert cfg["trading_hours"]["close"] == time(15, 0)
 
     def test_get_market_config_unknown_returns_empty(self):
         assert get_market_config("mars") == {}
@@ -27,6 +31,9 @@ class TestNSEMarketConfig:
 
     def test_is_nse_ticker_us_stock(self):
         assert is_nse_ticker("NVDA") is False
+
+    def test_is_nse_ticker_rejects_bare_suffix(self):
+        assert is_nse_ticker(".NR") is False
 
     def test_to_yfinance_ticker_bare(self):
         assert to_yfinance_ticker("SCOM") == "SCOM.NR"

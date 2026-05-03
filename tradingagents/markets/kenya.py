@@ -1,3 +1,4 @@
+import copy
 from datetime import time
 
 NSE_CONFIG = {
@@ -7,7 +8,7 @@ NSE_CONFIG = {
     "currency_symbol": "KSh",
     "timezone": "Africa/Nairobi",  # UTC+3, no DST
     "trading_hours": {
-        "open": time(9, 31),
+        "open": time(9, 0),   # was time(9, 31) — that's NYSE, not NSE
         "close": time(15, 0),
     },
     "settlement_days": 3,  # T+3
@@ -55,5 +56,5 @@ NSE_CONFIG = {
 
 
 def get_nse_config() -> dict:
-    """Return a copy of the NSE market configuration."""
-    return NSE_CONFIG.copy()
+    """Return a deep copy of the NSE market configuration."""
+    return copy.deepcopy(NSE_CONFIG)

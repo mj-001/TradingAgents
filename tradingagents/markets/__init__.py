@@ -1,3 +1,4 @@
+import copy
 from .kenya import NSE_CONFIG, get_nse_config
 
 _REGISTRY: dict[str, dict] = {
@@ -8,13 +9,14 @@ _REGISTRY: dict[str, dict] = {
 
 def get_market_config(market: str) -> dict:
     """Return market config dict for a named market, or {} if unknown."""
-    return _REGISTRY.get(market.lower(), {}).copy()
+    cfg = _REGISTRY.get(market.lower())
+    return copy.deepcopy(cfg) if cfg is not None else {}
 
 
 def is_nse_ticker(ticker: str) -> bool:
     """True if ticker is an NSE-listed symbol (bare or with .NR suffix)."""
     t = ticker.upper().strip()
-    return t.endswith(".NR") or t in NSE_CONFIG["tickers"]
+    return (t.endswith(".NR") and len(t) > 3) or t in NSE_CONFIG["tickers"]
 
 
 def to_yfinance_ticker(nse_symbol: str) -> str:
