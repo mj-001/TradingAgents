@@ -23,6 +23,10 @@ from .alpha_vantage import (
     get_global_news as get_alpha_vantage_global_news,
 )
 from .alpha_vantage_common import AlphaVantageRateLimitError
+from .kenyan_news import (
+    get_kenyan_news,
+    get_kenyan_global_news,
+)
 
 # Configuration and routing logic
 from .config import get_config
@@ -63,6 +67,7 @@ TOOLS_CATEGORIES = {
 VENDOR_LIST = [
     "yfinance",
     "alpha_vantage",
+    "kenyan_news",
 ]
 
 # Mapping of methods to their vendor-specific implementations
@@ -98,10 +103,12 @@ VENDOR_METHODS = {
     "get_news": {
         "alpha_vantage": get_alpha_vantage_news,
         "yfinance": get_news_yfinance,
+        "kenyan_news": get_kenyan_news,
     },
     "get_global_news": {
         "yfinance": get_global_news_yfinance,
         "alpha_vantage": get_alpha_vantage_global_news,
+        "kenyan_news": get_kenyan_global_news,
     },
     "get_insider_transactions": {
         "alpha_vantage": get_alpha_vantage_insider_transactions,
@@ -119,6 +126,7 @@ def get_category_for_method(method: str) -> str:
 def get_vendor(category: str, method: str = None) -> str:
     """Get the configured vendor for a data category or specific tool method.
     Tool-level configuration takes precedence over category-level.
+    Kenya/NSE market automatically routes news_data to kenyan_news vendor.
     """
     config = get_config()
 
@@ -127,6 +135,13 @@ def get_vendor(category: str, method: str = None) -> str:
         tool_vendors = config.get("tool_vendors", {})
         if method in tool_vendors:
             return tool_vendors[method]
+
+    # Auto-route news to Kenyan sources when market=kenya
+    if (
+        category == "news_data"
+        and config.get("market", "").lower() in ("kenya", "nse")
+    ):
+        return "kenyan_news"
 
     # Fall back to category-level configuration
     return config.get("data_vendors", {}).get(category, "default")
