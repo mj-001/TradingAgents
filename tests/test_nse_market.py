@@ -10,6 +10,7 @@ from tradingagents.dataflows.nse_utils import (
     normalize_nse_ticker,
     get_nse_instrument_context,
 )
+from tradingagents.agents.utils.agent_utils import build_instrument_context
 
 @pytest.mark.unit
 class TestNSEMarketConfig:
@@ -74,8 +75,6 @@ class TestNSEDataUtils:
         ctx = get_nse_instrument_context("EQTY.NR")
         assert "EQTY" in ctx
 
-
-from tradingagents.agents.utils.agent_utils import build_instrument_context
 
 @pytest.mark.unit
 class TestAgentUtils:
