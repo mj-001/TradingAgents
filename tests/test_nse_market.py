@@ -1,9 +1,14 @@
 import pytest
+from datetime import time
 from tradingagents.markets import (
     get_market_config,
     is_nse_ticker,
     to_yfinance_ticker,
     from_yfinance_ticker,
+)
+from tradingagents.dataflows.nse_utils import (
+    normalize_nse_ticker,
+    get_nse_instrument_context,
 )
 
 @pytest.mark.unit
@@ -16,7 +21,6 @@ class TestNSEMarketConfig:
         assert cfg["yfinance_suffix"] == ".NR"
         assert "SCOM" in cfg["tickers"]
         # Verify correct NSE trading hours
-        from datetime import time
         assert cfg["trading_hours"]["open"] == time(9, 0)
         assert cfg["trading_hours"]["close"] == time(15, 0)
 
@@ -48,11 +52,6 @@ class TestNSEMarketConfig:
         assert from_yfinance_ticker("SCOM.NR") == "SCOM"
         assert from_yfinance_ticker("EQTY.NR") == "EQTY"
 
-
-from tradingagents.dataflows.nse_utils import (
-    normalize_nse_ticker,
-    get_nse_instrument_context,
-)
 
 @pytest.mark.unit
 class TestNSEDataUtils:
