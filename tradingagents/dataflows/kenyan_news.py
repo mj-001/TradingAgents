@@ -4,6 +4,7 @@ Used as the 'kenyan_news' data vendor when market=kenya.
 """
 import requests
 from parsel import Selector
+from urllib.parse import quote
 from tradingagents.markets import from_yfinance_ticker
 
 _HEADERS = {
@@ -18,7 +19,7 @@ _TIMEOUT = 10
 
 def _scrape_business_daily(bare_ticker: str) -> list[dict]:
     """Scrape Business Daily Africa search results for a ticker."""
-    url = f"https://www.businessdailyafrica.com/search?q={bare_ticker}"
+    url = f"https://www.businessdailyafrica.com/search?q={quote(bare_ticker)}"
     try:
         resp = requests.get(url, headers=_HEADERS, timeout=_TIMEOUT)
         sel = Selector(text=resp.text)
@@ -43,7 +44,7 @@ def _scrape_business_daily(bare_ticker: str) -> list[dict]:
 
 def _scrape_kenyan_wall_street(bare_ticker: str) -> list[dict]:
     """Scrape Kenyan Wall Street search results for a ticker."""
-    url = f"https://kenyanwallstreet.com/?s={bare_ticker}"
+    url = f"https://kenyanwallstreet.com/?s={quote(bare_ticker)}"
     try:
         resp = requests.get(url, headers=_HEADERS, timeout=_TIMEOUT)
         sel = Selector(text=resp.text)

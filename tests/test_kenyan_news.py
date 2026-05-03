@@ -38,6 +38,7 @@ class TestKenyanNews:
         from tradingagents.dataflows.kenyan_news import get_kenyan_news
         result = get_kenyan_news("EQTY.NR", "2026-05-03")
         assert isinstance(result, str)  # graceful degradation
+        assert len(result) > 0          # fallback message is non-empty
 
     @patch("tradingagents.dataflows.kenyan_news.requests.get")
     def test_get_kenyan_global_news_returns_string(self, mock_get):
