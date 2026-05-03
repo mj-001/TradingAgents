@@ -35,7 +35,18 @@ def get_language_instruction() -> str:
 
 
 def build_instrument_context(ticker: str) -> str:
-    """Describe the exact instrument so agents preserve exchange-qualified tickers."""
+    """Describe the exact instrument so agents preserve exchange-qualified tickers.
+
+    For NSE-listed tickers, returns a rich Kenyan market context including
+    currency (KES), timezone (EAT/UTC+3), settlement (T+3), and regulatory info.
+    For all other tickers, returns the standard exchange-suffix preservation message.
+    """
+    # Kenya / NSE localisation — must come before generic suffix logic
+    from tradingagents.markets import is_nse_ticker, to_yfinance_ticker
+    from tradingagents.dataflows.nse_utils import get_nse_instrument_context
+    if is_nse_ticker(ticker):
+        return get_nse_instrument_context(to_yfinance_ticker(ticker))
+    # --- existing generic logic (unchanged) ---
     return (
         f"The instrument to analyze is `{ticker}`. "
         "Use this exact ticker in every tool call, report, and recommendation, "

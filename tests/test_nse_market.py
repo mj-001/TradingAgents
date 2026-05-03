@@ -73,3 +73,32 @@ class TestNSEDataUtils:
     def test_instrument_context_contains_bare_symbol(self):
         ctx = get_nse_instrument_context("EQTY.NR")
         assert "EQTY" in ctx
+
+
+from tradingagents.agents.utils.agent_utils import build_instrument_context
+
+@pytest.mark.unit
+class TestAgentUtils:
+    def test_build_instrument_context_nse_nr_ticker(self):
+        ctx = build_instrument_context("SCOM.NR")
+        assert "NSE" in ctx
+        assert "KES" in ctx
+
+    def test_build_instrument_context_bare_nse_symbol(self):
+        # bare NSE known symbols should also get Kenya context
+        ctx = build_instrument_context("EQTY")
+        assert "NSE" in ctx
+
+    def test_build_instrument_context_us_stock_no_nse(self):
+        # US stocks must NOT contain NSE context
+        ctx = build_instrument_context("NVDA")
+        assert "NSE" not in ctx
+        assert "NVDA" in ctx  # original ticker still in output
+
+    def test_build_instrument_context_nse_contains_t3(self):
+        ctx = build_instrument_context("KCB.NR")
+        assert "T+3" in ctx
+
+    def test_build_instrument_context_nse_contains_cma(self):
+        ctx = build_instrument_context("KPLC.NR")
+        assert "CMA" in ctx
