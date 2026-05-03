@@ -34,7 +34,7 @@ DEFAULT_CONFIG = {
     # Market/exchange localisation
     "market":   None,     # e.g. "kenya" — None means no market-specific localisation
     "exchange": None,     # e.g. "NSE"
-    "currency": "USD",    # display currency; overridden to "KES" when market="kenya"
+    "currency": "USD",    # display currency; set to "KES" via CLI or caller when market="kenya"
     # Debate and discussion settings
     "max_debate_rounds": 1,
     "max_risk_discuss_rounds": 1,

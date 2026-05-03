@@ -139,7 +139,7 @@ def get_vendor(category: str, method: str = None) -> str:
     # Auto-route news to Kenyan sources when market=kenya
     if (
         category == "news_data"
-        and config.get("market", "").lower() in ("kenya", "nse")
+        and (config.get("market") or "").lower() in ("kenya", "nse")
     ):
         return "kenyan_news"
 
