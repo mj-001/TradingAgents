@@ -326,6 +326,40 @@ def ask_gemini_thinking_config() -> str | None:
     ).ask()
 
 
+def ask_market() -> tuple[str, str]:
+    """Prompt the user to select the target market/exchange.
+
+    Returns:
+        Tuple of (market_key, currency) e.g. ("kenya", "KES") or ("", "USD")
+    """
+    MARKET_OPTIONS = [
+        ("🇺🇸  US Markets (NYSE / NASDAQ)", ("", "USD")),
+        ("🇰🇪  Kenya — Nairobi Securities Exchange (NSE)", ("kenya", "KES")),
+        ("🇨🇦  Canada — TSX (use .TO suffix)", ("canada", "USD")),
+        ("🇯🇵  Japan — TSE (use .T suffix)", ("japan", "USD")),
+        ("🌍  Other / Global (enter exchange suffix manually)", ("other", "USD")),
+    ]
+    choice = questionary.select(
+        "Select the market/exchange you are trading:",
+        choices=[
+            questionary.Choice(display, value=value)
+            for display, value in MARKET_OPTIONS
+        ],
+        style=questionary.Style(
+            [
+                ("highlighted", "fg:cyan bold"),
+                ("selected", "fg:green"),
+            ]
+        ),
+    ).ask()
+
+    if choice is None:
+        console.print("\n[red]No market selected. Exiting...[/red]")
+        exit(1)
+
+    return choice  # (market_key, currency)
+
+
 def ask_output_language() -> str:
     """Ask for report output language."""
     choice = questionary.select(
