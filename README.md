@@ -220,6 +220,43 @@ print(decision)
 
 See `tradingagents/default_config.py` for all configuration options.
 
+### 🇰🇪 Kenya — Nairobi Securities Exchange (NSE)
+
+TradingAgents supports NSE-listed stocks out of the box via Yahoo Finance's `.NR` suffix:
+
+```python
+import copy
+from tradingagents.graph.trading_graph import TradingAgentsGraph
+from tradingagents.default_config import DEFAULT_CONFIG
+
+config = copy.deepcopy(DEFAULT_CONFIG)
+config["market"]   = "kenya"
+config["exchange"] = "NSE"
+config["currency"] = "KES"
+config["data_vendors"]["news_data"] = "kenyan_news"  # Business Daily Africa, Kenyan Wall Street
+
+ta = TradingAgentsGraph(config=config)
+_, decision = ta.propagate("SCOM.NR", "2026-01-15")  # Safaricom
+```
+
+Or use the CLI and select **Kenya — Nairobi Securities Exchange (NSE)** when prompted for market.
+
+**Supported NSE tickers (sample):** SCOM, EQTY, KCB, SBIC, COOP, NCBA, EABL, BAT, KPLC, KEGN, KQ, NMG …
+
+**Localisation details:**
+
+| Feature | Value |
+|---------|-------|
+| Timezone | EAT — Africa/Nairobi (UTC+3, no DST) |
+| Trading hours | 09:00 – 15:00 EAT |
+| Settlement | T+3 |
+| Currency | KES (Kenyan Shilling, KSh) |
+| Regulator | CMA Kenya |
+| News sources | Business Daily Africa, Kenyan Wall Street |
+| Yahoo Finance suffix | `.NR` (e.g. `SCOM.NR`) |
+
+A full working example is available at [`examples/kenya_nse_example.py`](examples/kenya_nse_example.py).
+
 ## Persistence and Recovery
 
 TradingAgents persists two kinds of state across runs.
