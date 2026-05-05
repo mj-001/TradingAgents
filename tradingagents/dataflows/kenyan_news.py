@@ -177,7 +177,7 @@ def get_kenyan_news(ticker: str, start_date: str, end_date: str = None) -> str:
     return "\n".join(lines)
 
 
-def get_kenyan_global_news(curr_date: str) -> str:
+def get_kenyan_global_news(curr_date: str, look_back_days: int = 7, limit: int = 10) -> str:
     """
     Fetch East African macroeconomic and market-wide news.
     Pulls from Kenyan Wall Street and NSE press releases.
