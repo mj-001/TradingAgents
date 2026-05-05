@@ -67,12 +67,14 @@ def _scrape_kenyan_wall_street(bare_ticker: str) -> list[dict]:
         return []
 
 
-def get_kenyan_news(ticker: str, curr_date: str) -> str:
+def get_kenyan_news(ticker: str, start_date: str, end_date: str = None) -> str:
     """
     Fetch recent Kenyan financial news for a stock ticker.
     Accepts both bare NSE symbols (SCOM) and Yahoo Finance form (SCOM.NR).
+    start_date / end_date match the standard get_news interface.
     Returns a formatted text block suitable for LLM consumption.
     """
+    curr_date = end_date or start_date
     bare = from_yfinance_ticker(ticker) if ticker.upper().endswith(".NR") else ticker.upper()
     articles = _scrape_business_daily(bare) + _scrape_kenyan_wall_street(bare)
 
