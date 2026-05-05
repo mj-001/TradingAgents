@@ -470,7 +470,7 @@ def get_user_selections():
     welcome_content = f"{welcome_ascii}\n"
     welcome_content += "[bold green]TradingAgents: Multi-Agents LLM Financial Trading Framework - CLI[/bold green]\n\n"
     welcome_content += "[bold]Workflow Steps:[/bold]\n"
-    welcome_content += "I. Analyst Team → II. Research Team → III. Trader → IV. Risk Management → V. Portfolio Management\n\n"
+    welcome_content += "I. Analyst Team -> II. Research Team -> III. Trader -> IV. Risk Management -> V. Portfolio Management\n\n"
     welcome_content += (
         "[dim]Built by [Tauric Research](https://github.com/TauricResearch)[/dim]"
     )
@@ -499,15 +499,45 @@ def get_user_selections():
             box_content += f"\n[dim]Default: {default}[/dim]"
         return Panel(box_content, border_style="blue", padding=(1, 2))
 
+    # Step 0: Market/Exchange selection
+    console.print(
+        create_question_box(
+            "Step 0: Market / Exchange",
+            "Select the stock exchange you are trading on",
+        )
+    )
+    market_key, market_currency = ask_market()
+    if market_key == "kenya":
+        console.print(
+            "[green]Kenya / NSE selected.[/green] Tickers will be normalised to Yahoo Finance .NR format automatically."
+        )
+
     # Step 1: Ticker symbol
+    ticker_hint = (
+        "Enter the NSE ticker symbol (examples: SCOM, EQTY, KCB, BAMB). "
+        "The .NR suffix will be added automatically."
+        if market_key == "kenya"
+        else "Enter the exact ticker symbol to analyze, including exchange suffix when needed (examples: SPY, CNC.TO, 7203.T, 0700.HK)"
+    )
     console.print(
         create_question_box(
             "Step 1: Ticker Symbol",
-            "Enter the exact ticker symbol to analyze, including exchange suffix when needed (examples: SPY, CNC.TO, 7203.T, 0700.HK)",
-            "SPY",
+            ticker_hint,
+            "SCOM" if market_key == "kenya" else "SPY",
         )
     )
     selected_ticker = get_ticker()
+
+    # Auto-normalise NSE tickers to Yahoo Finance .NR format
+    if market_key == "kenya":
+        from tradingagents.markets import is_nse_ticker, to_yfinance_ticker
+        if is_nse_ticker(selected_ticker):
+            normalised = to_yfinance_ticker(selected_ticker)
+            if normalised != selected_ticker:
+                console.print(
+                    f"[dim]Ticker normalised: {selected_ticker} -> {normalised}[/dim]"
+                )
+                selected_ticker = normalised
 
     # Step 2: Analysis date
     default_date = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -599,6 +629,8 @@ def get_user_selections():
     return {
         "ticker": selected_ticker,
         "analysis_date": analysis_date,
+        "market": market_key,
+        "currency": market_currency,
         "analysts": selected_analysts,
         "research_depth": selected_research_depth,
         "llm_provider": selected_llm_provider.lower(),
@@ -944,6 +976,14 @@ def run_analysis(checkpoint: bool = False):
     config["anthropic_effort"] = selections.get("anthropic_effort")
     config["output_language"] = selections.get("output_language", "English")
     config["checkpoint_enabled"] = checkpoint
+
+    # Market / exchange localisation
+    config["market"]   = selections.get("market") or None
+    config["exchange"] = "NSE" if selections.get("market") == "kenya" else None
+    config["currency"] = selections.get("currency", "USD")
+    if selections.get("market") == "kenya":
+        config["data_vendors"] = dict(config["data_vendors"])   # copy before mutating
+        config["data_vendors"]["news_data"] = "kenyan_news"
 
     # Create stats callback handler for tracking LLM/tool calls
     stats_handler = StatsCallbackHandler()

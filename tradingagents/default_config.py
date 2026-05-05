@@ -31,6 +31,10 @@ DEFAULT_CONFIG = {
     # Output language for analyst reports and final decision
     # Internal agent debate stays in English for reasoning quality
     "output_language": "English",
+    # Market/exchange localisation
+    "market":   None,     # e.g. "kenya" — None means no market-specific localisation
+    "exchange": None,     # e.g. "NSE"
+    "currency": "USD",    # display currency; set to "KES" via CLI or caller when market="kenya"
     # Debate and discussion settings
     "max_debate_rounds": 1,
     "max_risk_discuss_rounds": 1,
